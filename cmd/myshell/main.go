@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Define an array of valid commands
-	validCommands := []string{"exit"}
+	validCommands := []string{"exit", "echo"}
 
 	// Create a new reader
 	reader := bufio.NewReader(os.Stdin)
@@ -37,6 +37,7 @@ func main() {
 
 		// Get the first word
 		firstWord := words[0]
+		prompt := words[1:]
 		// Check if the input is a valid command
 		isValidCommand := false
 		for _, cmd := range validCommands {
@@ -51,6 +52,8 @@ func main() {
 			fmt.Fprintf(os.Stdout, "%s: command not found\n", input)
 		} else if isValidCommand && firstWord == "exit" {
 			break
+		} else if isValidCommand && firstWord == "echo" {
+			fmt.Fprintf(os.Stdout, "%s\n", strings.Join(prompt, " "))
 		} else {
 			fmt.Fprintln(os.Stdout, "Valid command entered:", input)
 		}

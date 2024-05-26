@@ -30,10 +30,17 @@ func main() {
 		// Trim the newline character from the input
 		input = strings.TrimSpace(input)
 
+		words := strings.Fields(input)
+		if len(words) == 0 {
+			continue // if no words, prompt again
+		}
+
+		// Get the first word
+		firstWord := words[0]
 		// Check if the input is a valid command
 		isValidCommand := false
 		for _, cmd := range validCommands {
-			if input == cmd {
+			if firstWord == cmd {
 				isValidCommand = true
 				break
 			}

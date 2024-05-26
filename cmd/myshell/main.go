@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -38,7 +39,8 @@ func main() {
 
 		// Get the first word
 		firstWord := words[0]
-		prompt := words[1:]
+		args := words[1:]
+
 		// Check if the input is a valid command
 		isValidCommand := false
 		for _, cmd := range validCommands {
@@ -48,22 +50,26 @@ func main() {
 			}
 		}
 
-		// If the command is not valid, print an error message
+		// If the command is not valid and not an internal command
 		if !isValidCommand {
-			fmt.Fprintf(os.Stdout, "%s: command not found\n", firstWord)
-		} else if isValidCommand && firstWord == "exit" {
+			// Try to execute the command from the PATH
+			err = execCommand(firstWord, args)
+			if err != nil {
+				fmt.Fprintf(os.Stdout, "%s: command not found\n", firstWord)
+			}
+		} else if firstWord == "exit" {
 			break
-		} else if isValidCommand && firstWord == "echo" {
-			fmt.Fprintf(os.Stdout, "%s\n", strings.Join(prompt, " "))
-		} else if isValidCommand && firstWord == "type" {
-			type_shell(prompt, validCommands)
+		} else if firstWord == "echo" {
+			fmt.Fprintf(os.Stdout, "%s\n", strings.Join(args, " "))
+		} else if firstWord == "type" {
+			typeShell(args, validCommands)
 		} else {
 			fmt.Fprintln(os.Stdout, "Valid command entered:", input)
 		}
 	}
 }
 
-func type_shell(args []string, validCommands []string) {
+func typeShell(args []string, validCommands []string) {
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stdout, "type: missing operand")
 		return
@@ -98,4 +104,12 @@ func findExecutable(name string, paths []string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+func execCommand(name string, args []string) error {
+	cmd := exec.Command(name, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	return cmd.Run()
 }

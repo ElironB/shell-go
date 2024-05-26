@@ -45,13 +45,11 @@ func main() {
 				break
 			}
 		}
-		code := 0
 
 		// If the command is not valid, print an error message
 		if !isValidCommand {
 			fmt.Fprintf(os.Stdout, "%s: command not found\n", input)
 		} else if isValidCommand && firstWord == "exit" {
-			fmt.Fprintf(os.Stdout, "existing now %d", code)
 			break
 		} else {
 			fmt.Fprintln(os.Stdout, "Valid command entered:", input)

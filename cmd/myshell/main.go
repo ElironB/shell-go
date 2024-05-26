@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Define an array of valid commands
-	validCommands := []string{"exit", "echo"}
+	validCommands := []string{"exit", "echo", "type"}
 
 	// Create a new reader
 	reader := bufio.NewReader(os.Stdin)
@@ -54,8 +54,32 @@ func main() {
 			break
 		} else if isValidCommand && firstWord == "echo" {
 			fmt.Fprintf(os.Stdout, "%s\n", strings.Join(prompt, " "))
+		} else if isValidCommand && firstWord == "type" {
+			type_shell(prompt, validCommands)
 		} else {
 			fmt.Fprintln(os.Stdout, "Valid command entered:", input)
 		}
+
+	}
+}
+func type_shell(args []string, validCommands []string) {
+	if len(args) == 0 {
+		fmt.Fprintln(os.Stdout, "type: missing operand")
+		return
+	}
+
+	arg := args[0]
+	isBuiltin := false
+	for _, cmd := range validCommands {
+		if arg == cmd {
+			isBuiltin = true
+			break
+		}
+	}
+
+	if isBuiltin {
+		fmt.Fprintf(os.Stdout, "%s is a shell builtin\n", arg)
+	} else {
+		fmt.Fprintf(os.Stdout, "%s not found\n", arg)
 	}
 }

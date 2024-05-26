@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Define an array of valid commands
-	validCommands := []string{}
+	validCommands := []string{"exit"}
 
 	// Create a new reader
 	reader := bufio.NewReader(os.Stdin)
@@ -38,10 +38,14 @@ func main() {
 				break
 			}
 		}
+		code := 0
 
 		// If the command is not valid, print an error message
 		if !isValidCommand {
 			fmt.Fprintf(os.Stdout, "%s: command not found\n", input)
+		} else if isValidCommand && input == "exit" {
+			fmt.Fprintf(os.Stdout, "existing now %d", code)
+			break
 		} else {
 			fmt.Fprintln(os.Stdout, "Valid command entered:", input)
 		}

@@ -50,7 +50,7 @@ func main() {
 
 		// If the command is not valid, print an error message
 		if !isValidCommand {
-			fmt.Fprintf(os.Stdout, "%s: command not found\n", input)
+			fmt.Fprintf(os.Stdout, "%s: command not found\n", firstWord)
 		} else if isValidCommand && firstWord == "exit" {
 			break
 		} else if isValidCommand && firstWord == "echo" {
@@ -60,16 +60,15 @@ func main() {
 		} else {
 			fmt.Fprintln(os.Stdout, "Valid command entered:", input)
 		}
-
 	}
 }
+
 func type_shell(args []string, validCommands []string) {
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stdout, "type: missing operand")
 		return
 	}
 
-	paths := strings.Split(os.Getenv("PATH"), ":")
 	arg := args[0]
 	isBuiltin := false
 	for _, cmd := range validCommands {
@@ -81,10 +80,13 @@ func type_shell(args []string, validCommands []string) {
 
 	if isBuiltin {
 		fmt.Fprintf(os.Stdout, "%s is a shell builtin\n", arg)
-	} else if path, ok := findExecutable(args[1], paths); ok {
-		fmt.Printf("%s is %s\n", args[1], path)
 	} else {
-		fmt.Fprintf(os.Stdout, "%s not found\n", arg)
+		paths := strings.Split(os.Getenv("PATH"), ":")
+		if path, ok := findExecutable(arg, paths); ok {
+			fmt.Printf("%s is %s\n", arg, path)
+		} else {
+			fmt.Fprintf(os.Stdout, "%s not found\n", arg)
+		}
 	}
 }
 

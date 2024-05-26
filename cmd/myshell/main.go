@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -68,6 +69,7 @@ func type_shell(args []string, validCommands []string) {
 		return
 	}
 
+	paths := strings.Split(os.Getenv("PATH"), ":")
 	arg := args[0]
 	isBuiltin := false
 	for _, cmd := range validCommands {
@@ -79,7 +81,19 @@ func type_shell(args []string, validCommands []string) {
 
 	if isBuiltin {
 		fmt.Fprintf(os.Stdout, "%s is a shell builtin\n", arg)
+	} else if path, ok := findExecutable(args[1], paths); ok {
+		fmt.Printf("%s is %s\n", args[1], path)
 	} else {
 		fmt.Fprintf(os.Stdout, "%s not found\n", arg)
 	}
+}
+
+func findExecutable(name string, paths []string) (string, bool) {
+	for _, path := range paths {
+		fullpath := filepath.Join(path, name)
+		if _, err := os.Stat(fullpath); err == nil {
+			return fullpath, true
+		}
+	}
+	return "", false
 }

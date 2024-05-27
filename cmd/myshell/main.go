@@ -10,38 +10,30 @@ import (
 )
 
 func main() {
-	// Define an array of valid commands
 	validCommands := []string{"exit", "echo", "type"}
 
-	// Create a new reader
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
-		// Print the prompt
 		fmt.Fprint(os.Stdout, "$ ")
 
-		// Read the input until newline character
 		input, err := reader.ReadString('\n')
 
-		// Check for errors
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "An error occurred:", err)
 			return
 		}
 
-		// Trim the newline character from the input
 		input = strings.TrimSpace(input)
 
 		words := strings.Fields(input)
 		if len(words) == 0 {
-			continue // if no words, prompt again
+			continue
 		}
 
-		// Get the first word
 		firstWord := words[0]
 		args := words[1:]
 
-		// Check if the input is a valid command
 		isValidCommand := false
 		for _, cmd := range validCommands {
 			if firstWord == cmd {
@@ -50,9 +42,7 @@ func main() {
 			}
 		}
 
-		// If the command is not valid and not an internal command
 		if !isValidCommand {
-			// Try to execute the command from the PATH
 			err = execCommand(firstWord, args)
 			if err != nil {
 				fmt.Fprintf(os.Stdout, "%s: command not found\n", firstWord)
